@@ -15,7 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from face import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.get_main_page, name="welcome"),
+    path('process', views.process_request, name="process"),
+    path('image/<str:img_url>', views.get_image, name="image")
 ]
