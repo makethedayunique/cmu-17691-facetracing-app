@@ -61,23 +61,12 @@ def process_request(request):
 		ml = Mlresult(timeslots[i], images[i], i+1)
 		ml_dicc = {"index":ml.get_index(), "timeslot":ml.get_slot(), 
 		"image":"image/" + ml.get_image()}
-		# create_base64_img(MEDIA_ROOT + ml.get_image())
 		response_data["result"].append(ml_dicc)
 	# Return the result
 	response_json = json.dumps(response_data)
 	print(response_json)
 
 	return HttpResponse(response_json, content_type="application/json")
-
-
-def create_base64_img(img_url):
-	# This is the function to transfer the image file to 64 based encoding code
-	base64_str = ""
-	html_src = "data:image/png;base64,"
-	with open(img_url, "rb") as img:
-		base64_str = base64.b64encode(img.read())
-	html_src = html_src + base64_str.decode('utf-8')
-	return html_src
 
 
 def get_image(request, img_url):
