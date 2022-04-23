@@ -8,15 +8,11 @@ This is a face tracing app used to capture the target person in a video.
 
 ##### Input
 
-```
-<img src="face/static/face/images/input.png" width="220" height="240" />
-```
+![input](face/static/face/images/input.png)
 
 ##### Output
 
-```
-<img src="face/static/face/images/output.png" width="220" height="240" />
-```
+![output](face/static/face/images/output.png)
 
 ---
 
