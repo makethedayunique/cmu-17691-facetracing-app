@@ -8,11 +8,15 @@ This is a face tracing app used to capture the target person in a video.
 
 ##### Input
 
-![](/Users/seanwang/Library/Application%20Support/marktext/images/2022-04-23-17-17-02-image.png)
+```
+<img src="face/static/face/images/input.png" width="220" height="240" />
+```
 
 ##### Output
 
-![](/Users/seanwang/Library/Application%20Support/marktext/images/2022-04-23-17-17-52-image.png)
+```
+<img src="face/static/face/images/output.png" width="220" height="240" />
+```
 
 ---
 
@@ -21,7 +25,7 @@ This is a face tracing app used to capture the target person in a video.
 <p align="left">
 <a href="https://getbootstrap.com" target="_blank" rel="noreferrer"> 
 <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/bootstrap/bootstrap-plain-wordmark.svg" alt="bootstrap" width="40" height="40"/> 
-</a> 
+</a>
 
 <a href="https://www.djangoproject.com/" target="_blank" rel="noreferrer"> 
 <img src="https://static.djangoproject.com/img/logos/django-logo-positive.svg" alt="django" width="40" height="40"/> 
