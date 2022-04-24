@@ -1,8 +1,10 @@
 import cv2
 from deepface import DeepFace
+import os
+import time
+import glob
 
-vpath = './Video/Elon_FPS.mp4'
-input_photo = "./Photo/ElonMusk1.jpeg"
+
 model = 2 #Facenet 512
 metric= 2 # L2 Eucledian
 
@@ -59,16 +61,19 @@ def compare_frame_reinforce(vpath,input_photo,model,metric):
     
     frame_count = 0
     final_result = []
+    verified_frames = []
     while success:
         # Only extract one frame per second
         if frame_count % round(fps) == 0:
             frame_crop = face_crop(img)
             if type(frame_crop) == bool: # If no face found
                 final_result.append(False)   
+                verified_frames.append(None)
             else:
             	# Match frame with upload image
                 result = DeepFace.verify(frame_crop, upload_crop, model_name = models[model],distance_metric = metrics[metric], enforce_detection=False)
                 final_result.append(result['verified']) # Append True to list if match found
+                verified_frames.append(img)
                 # Reinforced, if the frame highly match the photo, use the face cropped from the fram
                 # to make future comparsion, will be updated constantly if another highly match is found 
                 if result['distance'] <= 0.8 * result['threshold'] : 
@@ -78,10 +83,10 @@ def compare_frame_reinforce(vpath,input_photo,model,metric):
         success,img = video_cap.read()
         frame_count+=1
     
-    return final_result
+    return final_result, verified_frames
 
 
-def consecutive_secs(inputs):
+def consecutive_secs(inputs, verified_frames):
 
     '''
 
@@ -92,6 +97,8 @@ def consecutive_secs(inputs):
 
     res = []
     temp = []
+    merged_frames = []
+    first_frame = None
     false_num = 0
     for idx, item in enumerate(inputs):
         if idx==0:
@@ -101,31 +108,37 @@ def consecutive_secs(inputs):
                 temp.append(idx-1)
             false_num = 0
             temp.append(idx)
+            if first_frame is None:
+                first_frame = verified_frames[idx]
         else:
             false_num += 1
             if false_num == 2:
-                res.append(temp)
-                temp = []
+                if (len(temp) > 1):
+                    res.append(temp)
+                    temp = []
+                    merged_frames.append(first_frame)
+                    first_frame = None
 
     if false_num == 1:
-        res.append(temp)
+        # res.append(temp)
+        if (len(temp) > 1):
+            res.append(temp)
+            temp = []
+            merged_frames.append(first_frame)
+            first_frame = None
 
-    res = [l for l in res if len(l)>1 ]
+    # res = [l for l in res if len(l)>1 ]
         
-    return res
+    return res, merged_frames
 
-def capture_images(vpath, frame_list, image_dir):
-    cam = cv2.VideoCapture(vpath)
-    current_frame_idx = 0
-    current_fragment_idx = 0
-    current_fragment = frame_list[current_fragment_idx]
-    while (1):
-        ret, frame = cam.read()
-        if ret and current_frame_idx >= current_fragment[0] and current_frame_idx <= current_fragment[len(current_fragment)-1]:
-            cv2.imwrite(image_dir+current_fragment_idx+".jpg", frame)
-            current_fragment_idx += 1
-            current_fragment = frame_list[current_fragment_idx]
-        current_frame_idx += 1
+
+def save_frame(frames, image_dir):
+    images = []
+    for idx, frame in enumerate(frames):
+        img_path = image_dir+"img"+str(idx)+".jpg"
+        cv2.imwrite(img_path, frame)
+        images.append(img_path)
+    return images
             
 
 def debug_display(frame_list):
@@ -140,13 +153,43 @@ def debug_display(frame_list):
         print(str(start//60) + 'm:' + str(start%60) + 's  TO   ' + str(end//60) + 'm:' + str(end%60) + 's'   )
         print()
 
+def convert_to_timeslots(frame_list):
+    """
+    Convert frame list into the format UI required
+    """
+    timeslots = []
+    for item in frame_list:
+        start = str(item[0]//3600) + ':' + str(item[0]//60) + ':' + str(item[0]%60)
+        end = str(item[1]//3600) + ':' + str(item[1]//60) + ':' + str(item[1]%60)
+        timeslots.append([start, end])
+    return timeslots
 
-def main():
-    result_list = compare_frame_reinforce(vpath,input_photo,model,metric)
-    frame_list = consecutive_secs(result_list)
+def cleanup(image_dir):
+    """
+    Clean up the directory for clipped images
+    """
+    files = glob.glob(image_dir + '*')
+    for f in files:
+        os.remove(f)
+
+def dbg_main():
+    vpath = './Video/Elon_FPS.mp4'
+    image_dir = './Photo/capture/'
+    input_photo = "./Photo/ElonMusk1.jpeg"
+
+    result_list, verified_frames = compare_frame_reinforce(vpath,input_photo,model,metric)
+    frame_list, merged_frames = consecutive_secs(result_list, verified_frames)
     debug_display(frame_list)
-    capture_images(frame_list)
+    paths = save_frame(merged_frames, image_dir)
+    print(convert_to_timeslots(frame_list))
+    print(paths)
 
+def get_face_trace(vpath, image_path, image_dir):
+    result_list, verified_frames = compare_frame_reinforce(vpath,image_path,model,metric)
+    frame_list, merged_frames = consecutive_secs(result_list, verified_frames)
+    timeslots = convert_to_timeslots(frame_list)
+    images = save_frame(merged_frames, image_dir)
+    return images, timeslots
 
 if __name__ == "__main__":
-    main()
+    dbg_main()
