@@ -3,7 +3,8 @@ from deepface import DeepFace
 
 vpath = './Video/Elon_FPS.mp4'
 input_photo = "./Photo/ElonMusk1.jpeg"
-model = 1
+model = 2 #Facenet 512
+metric= 2 # L2 Eucledian
 
 def face_crop(image):
 
@@ -27,12 +28,13 @@ def face_crop(image):
     return image
 
 
-def compare_frame_reinforce(vpath,input_photo,model):
+def compare_frame_reinforce(vpath,input_photo,model,metric):
 
     '''
     @param: vpath: path of the mp4 video file
     @param: imput_photo: path of the photo file to compare
     @param model: int index for model selection
+    @param metric: int index for metric selection 
 
     @returns: a boolean list with length equals to the second count
     		  of the video. Each element: True for match found,
@@ -42,8 +44,9 @@ def compare_frame_reinforce(vpath,input_photo,model):
 
 
     '''
-    # Model Selection, currently uses Facenet
+    # Model Selection, currently uses Facenet512 and L2 Eucledian
     models = ["VGG-Face", "Facenet", "Facenet512", "OpenFace", "DeepFace", "DeepID", "ArcFace", "Dlib"]
+    metrics = ["cosine", "euclidean", "euclidean_l2"]
     
     # Crops face for uploaded image
     upload_crop = face_crop(cv2.imread(input_photo))
@@ -64,11 +67,11 @@ def compare_frame_reinforce(vpath,input_photo,model):
                 final_result.append(False)   
             else:
             	# Match frame with upload image
-                result = DeepFace.verify(frame_crop, upload_crop, model_name = models[model],distance_metric = "euclidean_l2", enforce_detection=False)
+                result = DeepFace.verify(frame_crop, upload_crop, model_name = models[model],distance_metric = metrics[metric], enforce_detection=False)
                 final_result.append(result['verified']) # Append True to list if match found
                 # Reinforced, if the frame highly match the photo, use the face cropped from the fram
                 # to make future comparsion, will be updated constantly if another highly match is found 
-                if result['distance'] <=0.6 : 
+                if result['distance'] <= 0.8 * result['threshold'] : 
                     upload_crop = frame_crop
         
         success,img = video_cap.read()
@@ -124,7 +127,7 @@ def debug_display(frame_list):
 
 
 def main():
-    result_list = compare_frame_reinforce(vpath,input_photo,model)
+    result_list = compare_frame_reinforce(vpath,input_photo,model,metric)
     frame_list = consecutive_secs(result_list)
     debug_display(frame_list)
 
