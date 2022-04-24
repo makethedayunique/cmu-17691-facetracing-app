@@ -73,6 +73,7 @@ def compare_frame_reinforce(vpath,input_photo,model,metric):
                 # to make future comparsion, will be updated constantly if another highly match is found 
                 if result['distance'] <= 0.8 * result['threshold'] : 
                     upload_crop = frame_crop
+
         
         success,img = video_cap.read()
         frame_count+=1
@@ -113,6 +114,20 @@ def consecutive_secs(inputs):
         
     return res
 
+def capture_images(vpath, frame_list, image_dir):
+    cam = cv2.VideoCapture(vpath)
+    current_frame_idx = 0
+    current_fragment_idx = 0
+    current_fragment = frame_list[current_fragment_idx]
+    while (1):
+        ret, frame = cam.read()
+        if ret and current_frame_idx >= current_fragment[0] and current_frame_idx <= current_fragment[len(current_fragment)-1]:
+            cv2.imwrite(image_dir+current_fragment_idx+".jpg", frame)
+            current_fragment_idx += 1
+            current_fragment = frame_list[current_fragment_idx]
+        current_frame_idx += 1
+            
+
 def debug_display(frame_list):
 
     '''
@@ -130,6 +145,7 @@ def main():
     result_list = compare_frame_reinforce(vpath,input_photo,model,metric)
     frame_list = consecutive_secs(result_list)
     debug_display(frame_list)
+    capture_images(frame_list)
 
 
 if __name__ == "__main__":
