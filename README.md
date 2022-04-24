@@ -2,6 +2,11 @@
 
 This is a face tracing app used to capture the target person in a video.
 
+### Run in Docker
+```shell
+docker run -it -p 8000:8000 mlp-app
+```
+
 ---
 
 ### User Interface Example

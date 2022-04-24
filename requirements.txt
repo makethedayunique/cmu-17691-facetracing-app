@@ -4,3 +4,7 @@ django-environ==0.8.1
 environ==1.0
 Pillow==9.1.0
 sqlparse==0.4.2
+deepface==0.0.74
+opencv-python==4.5.5.62
+numpy==1.21.6
+tensorflow==2.8.0
