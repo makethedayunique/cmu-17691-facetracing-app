@@ -137,3 +137,5 @@ dmypy.json
 # venv
 Face_Model/Scripts/
 Face_Model/pyvenv.cfg
+pyvenv.cfg
+Scripts/

@@ -1,3 +1,4 @@
+from email.policy import default
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
@@ -16,6 +17,9 @@ from django import forms
 from face.result_model import Mlresult
 
 from PIL import Image
+
+from Face_Model import face_model
+from django.core.files.storage import default_storage
 
 import os
 import json
@@ -47,13 +51,21 @@ def process_request(request):
 		# File type: django.core.files.uploadedfile.TemporaryUploadedFile
 		input_video = request.FILES["input_video"]
 		input_picture = request.FILES["input_picture"]
+		video_path = default_storage.save(input_video.name, input_video)
+		pic_path = default_storage.save(input_picture.name, input_picture)
 	except:
 		return HttpResponse(status=400) # This is the bad request code
 
 	
 	# Hardcoded some result to display
-	timeslots = [("00:01:00", "00:01:45"), ("00:02:30", "00:03:12"), ("00:05:57", "00:06:34")]
-	images = ["wall7.jpg", "wall7.jpg", "wall8.jpg"]
+	# timeslots = [("00:01:00", "00:01:45"), ("00:02:30", "00:03:12"), ("00:05:57", "00:06:34")]
+	# images = ["wall7.jpg", "wall7.jpg", "wall8.jpg"]
+	
+	images, timeslots = face_model.get_face_trace(MEDIA_ROOT+video_path,MEDIA_ROOT+pic_path, MEDIA_ROOT)
+	# Clean up temp files
+	default_storage.delete(video_path)
+	default_storage.delete(pic_path)
+
 	# Use the ML models to get the result and get the result
 	response_data = {}
 	response_data["result"] = []
@@ -73,6 +85,7 @@ def get_image(request, img_url):
 
 	# This is the function to retrieve the image resources
 	try:
+		print(img_url)
 		with open(MEDIA_ROOT + img_url, "rb") as f:
 			return HttpResponse(f.read(), content_type="image/jpeg")
 	except IOError:
