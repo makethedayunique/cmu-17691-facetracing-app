@@ -2,11 +2,15 @@
 
 This is a face tracing app used to capture the target person in a video.
 
+### TODO
+- CICD pipeline
+- Fix bug: clean up temporary file when the client connections break
+
 ### Run in Docker
 ```shell
 docker run -it -p 8000:8000 mlp-app
 ```
-
+https://mlp-face-tracing.herokuapp.com/
 ---
 
 ### User Interface Example
