@@ -130,3 +130,12 @@ dmypy.json
 
 # Mac
 .DS_Store
+
+# VS code
+.vscode/
+
+# venv
+Face_Model/Scripts/
+Face_Model/pyvenv.cfg
+pyvenv.cfg
+Scripts/

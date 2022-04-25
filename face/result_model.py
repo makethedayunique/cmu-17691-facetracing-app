@@ -1,6 +1,9 @@
 """
 	This is the class to handle the returned result from the model
 """
+import os
+from facetracing.settings import MEDIA_ROOT
+
 class Mlresult:
 
 	def __init__(self, timeslot, image, index):
@@ -26,4 +29,5 @@ class Mlresult:
 		return self.start_time + " - " + self.end_time
 
 	def get_image(self):
-		return self.image
+		return os.path.relpath(self.image, MEDIA_ROOT)
+		# return self.image
