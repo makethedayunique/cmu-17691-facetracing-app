@@ -37,6 +37,10 @@ function upload_and_return() {
   formData.append("input_video", video);
   formData.append("input_picture", picture);
 
+  // Show the spinner icon
+  document.getElementById("id-spinner").hidden=false; // Show the spinner
+  document.getElementById("id_upload_btn").hidden=true; // Hide the upload button
+
   $.ajax({
     url: '/process',
     method: 'POST',
@@ -44,9 +48,13 @@ function upload_and_return() {
     processData: false,
     data: formData,
     success: function(res) {
+      document.getElementById("id-spinner").hidden=true; // Hide the spinner
+      document.getElementById("id_upload_btn").hidden=false; // Show the upload button
       render_table(res);
     },
     error: function() {
+      document.getElementById("id-spinner").hidden=true; // Hide the spinner
+      document.getElementById("id_upload_btn").hidden=false; // Show the upload button
       $("#id_fail_modal").modal();
     }
   });
