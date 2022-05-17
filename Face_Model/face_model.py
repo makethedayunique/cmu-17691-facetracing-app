@@ -3,6 +3,7 @@ from deepface import DeepFace
 import os
 import time
 import glob
+from datetime import timedelta
 
 
 model = 2 #Facenet 512
@@ -159,8 +160,11 @@ def convert_to_timeslots(frame_list):
     """
     timeslots = []
     for item in frame_list:
-        start = str(item[0]//3600) + ':' + str(item[0]//60) + ':' + str(item[0]%60)
-        end = str(item[1]//3600) + ':' + str(item[1]//60) + ':' + str(item[1]%60)
+        # start = str(item[0]//3600) + ':' + str(item[0]//60) + ':' + str(item[0]%60)
+        # end = str(item[-1]//3600) + ':' + str(item[-1]//60) + ':' + str(item[-1]%60)
+        # ========================Use=Datetime.timedelta=============================
+        start = str(timedelta(seconds=item[0]))
+        end = str(timedelta(seconds=item[-1]))
         timeslots.append([start, end])
     return timeslots
 
