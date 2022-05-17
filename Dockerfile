@@ -13,4 +13,6 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
-CMD [ "python3", "manage.py" , "runserver"]
+RUN python manage.py collectstatic --noinput --clear
+
+CMD [ "python3", "manage.py" , "runserver", "0.0.0.0:8000"]
