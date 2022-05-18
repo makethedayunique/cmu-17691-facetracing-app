@@ -2,7 +2,8 @@ FROM python:3.8
 
 WORKDIR /app
 
-ENV DJANGO_SETTINGS_MODULE=facetracing.settings \
+ENV PYTHONPATH=/app \
+	DJANGO_SETTINGS_MODULE=facetracing.settings \
 	PORT=8000
 
 RUN apt-get update
@@ -16,7 +17,8 @@ COPY . .
 
 RUN python manage.py collectstatic --noinput --clear
 
-RUN export DJANGO_SETTINGS_MODULE=facetracing.settings
+RUN chown -R django:django /app
+USER django
 
 #CMD [ "python3", "manage.py" , "runserver", "0.0.0.0:8000"]
 CMD gunicorn facetracing.wsgi:application
