@@ -13,4 +13,6 @@ COPY . .
 
 RUN python manage.py collectstatic --noinput --clear
 
+RUN export DJANGO_SETTINGS_MODULE=facetracing.settings
+
 CMD [ "python3", "manage.py" , "runserver", "0.0.0.0:8000"]
