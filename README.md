@@ -10,7 +10,7 @@ This is a face tracing app used to capture the target person in a video.
 ```shell
 docker run -it -p 8000:8000 mlp-app
 ```
-https://mlp-face-tracing.herokuapp.com/
+https://facetracing-mlwebsite.herokuapp.com/
 ---
 
 ### User Interface Example

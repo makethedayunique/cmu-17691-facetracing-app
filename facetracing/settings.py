@@ -36,6 +36,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['facetracing-mlwebsite.herokuapp.com', '0.0.0.0', 'localhost', '127.0.0.1']
 
+CSRF_TRUSTED_ORIGINS = ['https://facetracing-mlwebsite.herokuapp.com']
 
 # Application definition
 
